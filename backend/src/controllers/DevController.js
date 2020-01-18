@@ -2,7 +2,7 @@ const Dev = require('../models/Dev');
 const axios = require('axios');
 const parseString = require('../utils/parseString');
 //Index: show list, show: only one, store, update, destroy: delete
-
+const { findConnections, sendMessage } = require('../websocket');
 module.exports = {
     async index(req, res){
         const devs = await Dev.find();
@@ -25,10 +25,14 @@ module.exports = {
             dev = await Dev.create({
                 github_username, name, avatar_url, bio, techs: techsArray, location,
             })
-            console.log(name, avatar_url, bio, github_username);
+            
+            const sendSocketMessageTo = findConnections({
+                latitude, longitude
+            }, techsArray,)
+            sendMessage(sendSocketMessageTo, 'new-dev', dev);
         }
 
-
+       
 
         return res.json(dev);
     }
